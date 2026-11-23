@@ -1,0 +1,21 @@
+{
+  "name": "الساعة الرياضية",
+  "short_name": "ساعة رياضية",
+  "description": "ساعة حية تعرض الأرقام في صورة معادلات رياضية قابلة للتغيير.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07090a",
+  "theme_color": "#07090a",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

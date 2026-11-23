@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#080b0c">
+<meta name="description" content="ساعة رياضية تعرض الساعات في صورة معادلات من التفاضل والتكامل والجبر والهندسة.">
+<link rel="manifest" href="manifest.webmanifest">
+<title>الساعة الرياضية</title>
+<style>
+:root{--bg:#07090a;--panel:#101517;--ink:#f0f0e9;--muted:#9ba5a7;--line:#536064;--accent:#d6e0df;--grid:rgba(170,190,190,.055)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;min-height:100vh;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+body.blueprint{--bg:#07131d;--panel:#0c202d;--ink:#e2f4ff;--muted:#91b6ca;--line:#38637a;--accent:#8bd5ff;--grid:rgba(100,190,230,.08)}
+header{max-width:900px;margin:auto;padding:18px 16px 8px;text-align:center}
+h1{font-size:clamp(20px,5vw,30px);font-weight:500;letter-spacing:1px;margin:4px 0}
+.sub{color:var(--muted);font-size:12px;letter-spacing:1.2px}
+main{max-width:900px;margin:auto;padding:10px 14px 36px}
+.clock-wrap{display:flex;justify-content:center;align-items:center;padding:8px 0 14px}
+.clock{width:min(92vw,510px);aspect-ratio:1;position:relative;border:1px solid var(--line);border-radius:50%;background:radial-gradient(circle at center,rgba(130,150,150,.09),transparent 58%);box-shadow:0 0 0 7px rgba(120,140,140,.035),0 0 0 17px rgba(120,140,140,.025),inset 0 0 35px rgba(120,140,140,.07)}
+.clock:before,.clock:after{content:"";position:absolute;border:1px dashed rgba(150,170,170,.24);border-radius:50%;inset:8%}
+.clock:after{inset:25%;border-style:solid;opacity:.55}
+.tick{position:absolute;left:50%;top:2%;height:7px;width:1px;background:var(--muted);transform-origin:50% 690%}
+.tick.major{height:12px;width:2px;background:var(--ink)}
+.hour-formula{position:absolute;z-index:3;left:50%;top:50%;width:27%;min-height:34px;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px 5px;border:1px solid rgba(150,170,170,.22);border-radius:7px;background:rgba(5,8,9,.91);color:var(--ink);font-family:Georgia,"Times New Roman",serif;font-size:clamp(8px,2.15vw,12px);line-height:1.2;transform:translate(-50%,-50%);overflow-wrap:anywhere;box-shadow:0 2px 10px rgba(0,0,0,.28)}
+.blueprint .hour-formula{background:rgba(5,20,30,.94);border-color:rgba(130,205,240,.35)}
+.hand{position:absolute;left:50%;bottom:50%;transform-origin:50% 100%;border-radius:8px;z-index:5}
+.hour-hand{height:25%;width:4px;background:var(--ink)}
+.minute-hand{height:36%;width:2px;background:var(--accent)}
+.second-hand{height:39%;width:1px;background:#aeb8b8;opacity:.8}
+.pin{position:absolute;z-index:7;left:50%;top:50%;width:13px;height:13px;border-radius:50%;background:var(--ink);border:3px solid #4e5b5d;transform:translate(-50%,-50%)}
+.readout{text-align:center;margin:4px auto 16px;color:var(--muted);font-size:14px;direction:ltr}
+.readout strong{color:var(--ink);font-size:23px;font-weight:500;letter-spacing:2px}
+.toolbar{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:12px 0 18px}
+button,select{font:inherit}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:10px 15px;border-radius:10px;cursor:pointer}
+button.primary{background:var(--ink);color:var(--bg);font-weight:650}
+button:active{transform:scale(.98)}
+.panel{background:rgba(12,17,19,.94);border:1px solid var(--line);border-radius:15px;padding:15px;margin:12px auto;max-width:760px}
+.blueprint .panel{background:rgba(8,25,36,.96)}
+.panel h2{font-size:17px;font-weight:600;margin:0 0 6px}
+.hint{font-size:12px;color:var(--muted);line-height:1.7;margin:0 0 12px}
+.settings-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.settings-row label{font-size:13px;color:var(--muted)}
+select{background:#080d0f;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px;max-width:100%;min-width:130px}
+.blueprint select{background:#071722}
+#editor{display:none}
+#editor.open{display:block}
+.formula-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:9px;margin-top:12px}
+.formula-item{border:1px solid rgba(140,160,160,.2);border-radius:10px;padding:9px;background:rgba(0,0,0,.12)}
+.formula-item .hour-title{font-weight:650;margin-bottom:7px}
+.formula-item select{width:100%;font-size:12px}
+.note{font-size:11px;color:var(--muted);text-align:center;line-height:1.7;margin:18px auto 0;max-width:650px}
+footer{text-align:center;color:#687477;font-size:10px;padding:12px}
+@media(max-width:380px){.hour-formula{width:29%;font-size:7.5px;padding:3px}.clock{width:96vw}.panel{padding:12px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>الساعة الرياضية</h1>
+  <div class="sub">MATHEMATICAL CLOCK · 12 EXACT EXPRESSIONS</div>
+</header>
+<main>
+  <div class="clock-wrap">
+    <div class="clock" id="clock" aria-label="ساعة رياضية">
+      <div id="ticks"></div>
+      <div id="formulaPositions"></div>
+      <div class="hand hour-hand" id="hourHand"></div>
+      <div class="hand minute-hand" id="minuteHand"></div>
+      <div class="hand second-hand" id="secondHand"></div>
+      <div class="pin"></div>
+    </div>
+  </div>
+  <div class="readout"><strong id="digitalTime">--:--:--</strong><div id="dateLine" dir="rtl"></div></div>
+  <div class="toolbar">
+    <button class="primary" id="editBtn">تعديل المعادلات</button>
+    <button id="themeBtn">تغيير شكل الخلفية</button>
+    <button id="resetBtn">إعادة الضبط</button>
+  </div>
+  <section class="panel" id="editor">
+    <h2>خصص أرقام الساعة</h2>
+    <p class="hint">اختار لكل موضع معادلة مختلفة من فروع الرياضيات. كل اختيار في القائمة محسوب بحيث تكون قيمته مساوية لرقم الساعة نفسه.</p>
+    <div class="settings-row">
+      <label for="categoryFilter">تصفية حسب الفرع:</label>
+      <select id="categoryFilter">
+        <option value="all">كل فروع الرياضيات</option>
+        <option value="calculus">تفاضل وتكامل</option>
+        <option value="limits">نهايات</option>
+        <option value="algebra">جبر ومحددات</option>
+        <option value="complex">أعداد مركبة</option>
+        <option value="combinatorics">توافيق ومضروب</option>
+        <option value="trig">مثلثات</option>
+        <option value="series">متسلسلات</option>
+        <option value="ode">معادلات تفاضلية</option>
+      </select>
+    </div>
+    <div class="formula-grid" id="formulaGrid"></div>
+    <p class="hint" style="margin-top:12px">تقدر تغير معادلة كل ساعة لوحدها، والاختيارات بتتحفظ تلقائيًا على نفس الجهاز.</p>
+  </section>
+  <p class="note">الساعة والعقارب بتتحدث تلقائيًا كل ثانية. المعادلات ثابتة عند مواضع ١ إلى ١٢، وتقدر تبدلها من لوحة التعديل. التصميم يعمل دون اتصال بعد تثبيته من رابط HTTPS.</p>
+</main>
+<footer>ALGEBRA · CALCULUS · GEOMETRY · COMPLEX NUMBERS</footer>
+<script>
+const bank = {
+1:[
+ ['limits','نهايات','limₓ→₀ (sin x / x) = 1'],
+ ['trig','متطابقات مثلثية','sin²θ + cos²θ = 1'],
+ ['complex','أعداد مركبة','i⁴ = 1'],
+ ['calculus','تفاضل','d(x)/dx = 1']
+],
+2:[
+ ['calculus','تكامل محدد','∫₀^π sin(x) dx = 2'],
+ ['algebra','محددات','det[[3,1],[1,1]] = 2'],
+ ['combinatorics','توافيق','C(2,1) = 2'],
+ ['complex','أعداد مركبة','(1+i)(1−i) = 2']
+],
+3:[
+ ['calculus','مشتقات','[d(x³)/dx]ₓ₌₁ = 3'],
+ ['calculus','تكامل محدد','∫₀¹ 6x dx = 3'],
+ ['algebra','محددات','det[[2,1],[1,2]] = 3'],
+ ['series','متسلسلات','1 + 2 = 3']
+],
+4:[
+ ['algebra','محددات','det[[3,1],[5,3]] = 4'],
+ ['calculus','تكامل محدد','∫₀² 2x dx = 4'],
+ ['algebra','جبر','(x+2)² عند x=0 = 4'],
+ ['combinatorics','مضروب','2! + 2 = 4']
+],
+5:[
+ ['complex','أعداد مركبة','(2+i)(2−i) = 5'],
+ ['combinatorics','توافيق','C(5,1) = 5'],
+ ['calculus','تكامل محدد','∫₀¹ 10x dx = 5'],
+ ['algebra','محددات','det[[3,1],[1,2]] = 5']
+],
+6:[
+ ['combinatorics','مضروب','3! = 6'],
+ ['calculus','تكامل محدد','∫₀^π 3sin(x) dx = 6'],
+ ['algebra','محددات','det[[3,0],[0,2]] = 6'],
+ ['combinatorics','توافيق','C(4,2) = 6']
+],
+7:[
+ ['calculus','تكامل محدد','∫₀¹ (12x+1) dx = 7'],
+ ['calculus','مشتقات','[d(x⁷)/dx]ₓ₌₁ = 7'],
+ ['algebra','محددات','det[[4,1],[1,2]] = 7'],
+ ['series','متسلسلات','1 + 2 + 4 = 7']
+],
+8:[
+ ['algebra','أسس','2³ = 8'],
+ ['calculus','تكامل محدد','∫₀² (3x²−2x+2) dx = 8'],
+ ['algebra','محددات','det[[3,1],[1,3]] = 8'],
+ ['complex','أعداد مركبة','(2+2i)(2−2i) = 8']
+],
+9:[
+ ['limits','نهايات','limₓ→₃ x² = 9'],
+ ['calculus','تكامل محدد','∫₀³ 2x dx = 9'],
+ ['algebra','محددات','det[[4,1],[3,3]] = 9'],
+ ['calculus','مشتقات','[d(x³)/dx]ₓ₌√3 = 9']
+],
+10:[
+ ['combinatorics','توافيق','C(5,2) = 10'],
+ ['series','متسلسلات','Σₙ₌₁⁴ n = 10'],
+ ['combinatorics','مضروب','5!/(3!·2!) = 10'],
+ ['calculus','تكامل محدد','∫₀² (3x²−2x+3) dx = 10']
+],
+11:[
+ ['calculus','تكامل محدد','∫₀¹ (20x+1) dx = 11'],
+ ['algebra','محددات','det[[4,1],[1,3]] = 11'],
+ ['calculus','مشتقات','[d(x¹¹)/dx]ₓ₌₁ = 11'],
+ ['ode','معادلات تفاضلية','y″+y=0 ؛ y(0)=0 ، y′(0)=11']
+],
+12:[
+ ['calculus','تكامل محدد','∫₀² (3x²+2) dx = 12'],
+ ['combinatorics','مضروب','4!/2! = 12'],
+ ['algebra','محددات','det[[5,1],[3,3]] = 12'],
+ ['combinatorics','مضروب','3! × 2 = 12']
+]
+};
+const defaultChoice = {};
+for(let h=1;h<=12;h++) defaultChoice[h]=0;
+let choices = {...defaultChoice};
+try{const saved=JSON.parse(localStorage.getItem('mathClockChoices')||'null');if(saved) choices={...choices,...saved};}catch(e){}
+let blueprint = false;
+try{blueprint=localStorage.getItem('mathClockTheme')==='blueprint';}catch(e){}
+if(blueprint) document.body.classList.add('blueprint');
+
+const positions=document.getElementById('formulaPositions');
+const grid=document.getElementById('formulaGrid');
+const filter=document.getElementById('categoryFilter');
+function polar(hour,r){
+ const a=Math.PI/2-hour*Math.PI/6;
+ return {x:50+r*Math.cos(a),y:50-r*Math.sin(a)};
+}
+function buildTicks(){
+ const root=document.getElementById('ticks');
+ for(let i=0;i<60;i++){
+  const d=document.createElement('div');d.className='tick'+(i%5===0?' major':'');
+  d.style.transform=`translateX(-50%) rotate(${i*6}deg)`;
+  root.appendChild(d);
+ }
+}
+function renderFace(){
+ positions.innerHTML='';
+ for(let h=1;h<=12;h++){
+  const p=polar(h,39);
+  const item=bank[h][choices[h]||0];
+  const el=document.createElement('div');el.className='hour-formula';
+  el.style.left=p.x+'%';el.style.top=p.y+'%';
+  el.textContent=item[2];el.title=`الساعة ${h}: ${item[1]}`;
+  positions.appendChild(el);
+ }
+}
+function renderEditor(){
+ grid.innerHTML='';
+ for(let h=1;h<=12;h++){
+  const wrap=document.createElement('div');wrap.className='formula-item';
+  const title=document.createElement('div');title.className='hour-title';title.textContent=`موضع الساعة ${h}`;
+  const select=document.createElement('select');select.setAttribute('aria-label',`معادلة الساعة ${h}`);
+  bank[h].forEach((f,i)=>{
+   if(filter.value!=='all' && f[0]!==filter.value)return;
+   const op=document.createElement('option');op.value=i;op.textContent=`${f[1]} · ${f[2]}`;
+   if((choices[h]||0)===i)op.selected=true;
+   select.appendChild(op);
+  });
+  if(!select.options.length){
+   const op=document.createElement('option');op.textContent='لا توجد معادلة من الفرع ده للرقم ده';op.value=choices[h]||0;select.appendChild(op);select.disabled=true;
+  }else select.addEventListener('change',()=>{
+   choices[h]=Number(select.value);
+   try{localStorage.setItem('mathClockChoices',JSON.stringify(choices));}catch(e){}
+   renderFace();
+  });
+  wrap.append(title,select);grid.appendChild(wrap);
+ }
+}
+function updateClock(){
+ const now=new Date(), sec=now.getSeconds(), min=now.getMinutes(), hr=now.getHours()%12;
+ const secondAngle=sec*6, minuteAngle=min*6+sec*.1, hourAngle=hr*30+min*.5;
+ document.getElementById('secondHand').style.transform=`translateX(-50%) rotate(${secondAngle}deg)`;
+ document.getElementById('minuteHand').style.transform=`translateX(-50%) rotate(${minuteAngle}deg)`;
+ document.getElementById('hourHand').style.transform=`translateX(-50%) rotate(${hourAngle}deg)`;
+ document.getElementById('digitalTime').textContent=now.toLocaleTimeString('en-GB',{hour12:false});
+ document.getElementById('dateLine').textContent=now.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+document.getElementById('editBtn').addEventListener('click',()=>{
+ const e=document.getElementById('editor');e.classList.toggle('open');
+ document.getElementById('editBtn').textContent=e.classList.contains('open')?'إخفاء التعديل':'تعديل المعادلات';
+});
+document.getElementById('themeBtn').addEventListener('click',()=>{
+ blueprint=!blueprint;document.body.classList.toggle('blueprint',blueprint);
+ try{localStorage.setItem('mathClockTheme',blueprint?'blueprint':'chalk');}catch(e){}
+ document.getElementById('themeBtn').textContent=blueprint?'العودة للسبورة السوداء':'تغيير شكل الخلفية';
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{
+ choices={...defaultChoice};try{localStorage.removeItem('mathClockChoices');}catch(e){}
+ renderFace();renderEditor();
+});
+filter.addEventListener('change',renderEditor);
+buildTicks();renderFace();renderEditor();updateClock();setInterval(updateClock,250);
+document.getElementById('themeBtn').textContent=blueprint?'العودة للسبورة السوداء':'تغيير شكل الخلفية';
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body>
+</html>
